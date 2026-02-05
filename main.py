@@ -1,3 +1,10 @@
+from datetime import datetime
+
+
+def log_evento(nivel, mensagem):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"[{timestamp}] [{nivel}] {mensagem}")
+
 def verificar_idade(usuario):
     if usuario["idade"] >= 18:
         return f'{usuario["nome"]} é maior de idade'
@@ -71,6 +78,8 @@ def mostrar_resumo(usuario):
 def main():
     usuarios = []
 
+    log_evento("INFO", "Sistema iniciado")
+
     while True:
         print("\n=== MENU ===")
         print("1) Cadastrar usuário")
@@ -85,11 +94,11 @@ def main():
             usuario, erro = validar_usuario(dados)
 
             if erro:
-                print("Erro:", erro)
+                log_evento("WARN", f"Falha na validação: {erro}")
                 continue
 
             adicionar_usuario(usuarios, usuario)
-            print("Usuário cadastrado com sucesso.")
+            log_evento("INFO", f'Usuário cadastrado: {usuario["nome"]}')
             mostrar_resumo(usuario)
 
         elif opcao == "2":
@@ -102,11 +111,12 @@ def main():
             mostrar_resumo(usuarios[-1])
 
         elif opcao == "0":
-            print("Saindo...")
+            log_evento("INFO", "Sistema encerrado pelo usuário")
             break
 
         else:
             print("Opção inválida.")
+
 
 if __name__ == "__main__":
     main()

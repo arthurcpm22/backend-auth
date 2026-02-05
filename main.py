@@ -1,21 +1,9 @@
-from datetime import datetime
+from logging_utils import log_evento
+from validation import validar_usuario
+from services import adicionar_usuario, listar_usuarios
+from rules import mostrar_resumo
 
 
-def log_evento(nivel, mensagem):
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print(f"[{timestamp}] [{nivel}] {mensagem}")
-
-def verificar_idade(usuario):
-    if usuario["idade"] >= 18:
-        return f'{usuario["nome"]} é maior de idade'
-    return f'{usuario["nome"]} é menor de idade'
-
-
-def verificar_status(usuario):
-    return "Usuário está ativo" if usuario["ativo"] else "Usuário está inativo"
-
-
-# --- "Controller": entrada de dados (simulando request) ---
 def obter_usuario():
     nome = input("Digite o nome: ").strip()
     idade_str = input("Digite a idade: ").strip()
@@ -28,56 +16,8 @@ def obter_usuario():
     }
 
 
-# --- "Validator": validação e normalização ---
-def validar_usuario(dados):
-    # validar nome
-    nome = dados["nome"]
-    if not nome:
-        return None, "Nome não pode ser vazio."
-
-    # validar idade
-    try:
-        idade = int(dados["idade_str"])
-    except ValueError:
-        return None, "Idade inválida. Digite um número inteiro."
-
-    if idade < 0 or idade > 120:
-        return None, "Idade fora do intervalo esperado (0–120)."
-
-    # validar ativo
-    ativo_str = dados["ativo_str"]
-    if ativo_str not in ("s", "n"):
-        return None, 'Campo "ativo" inválido. Use "s" ou "n".'
-
-    ativo = ativo_str == "s"
-
-    usuario = {"nome": nome, "idade": idade, "ativo": ativo}
-    return usuario, None
-
-
-# --- "Service": operação de negócio ---
-def adicionar_usuario(usuarios, usuario):
-    usuarios.append(usuario)
-
-
-def listar_usuarios(usuarios):
-    if not usuarios:
-        print("Nenhum usuário cadastrado.")
-        return
-
-    for i, usuario in enumerate(usuarios, start=1):
-        print(f"[{i}] {usuario['nome']} | idade={usuario['idade']} | ativo={usuario['ativo']}")
-
-
-def mostrar_resumo(usuario):
-    print(verificar_idade(usuario))
-    print(verificar_status(usuario))
-    print("-" * 30)
-
-
 def main():
     usuarios = []
-
     log_evento("INFO", "Sistema iniciado")
 
     while True:
@@ -120,19 +60,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-def main():
-    usuario = obter_usuario()
-
-    if usuario is None:
-        print("Erro ao criar usuário.")
-        return
-
-    verificar_idade(usuario["nome"], usuario["idade"])
-    verificar_status(usuario["ativo"])
-
-
-if __name__ == "__main__":
-    main()
-

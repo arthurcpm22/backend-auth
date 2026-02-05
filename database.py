@@ -55,3 +55,15 @@ def listar_usuarios_db():
         })
 
     return usuarios
+
+def buscar_usuario_por_id(usuario_id: int):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, nome, idade, ativo FROM usuarios WHERE id = ?", (usuario_id,))
+    row = cursor.fetchone()
+    conn.close()
+
+    if not row:
+        return None
+
+    return {"id": row[0], "nome": row[1], "idade": row[2], "ativo": bool(row[3])}

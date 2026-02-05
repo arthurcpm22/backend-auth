@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException, status, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from logging_utils import log_evento
 from validation import validar_usuario
+from database import buscar_usuario_por_id
 
 app = FastAPI()
 @app.on_event("startup")
@@ -49,4 +50,10 @@ def listar_usuarios(admin=Depends(require_admin)):
     usuarios = listar_usuarios_db()
     return {"total": len(usuarios), "usuarios": usuarios}
 
+@app.get("/usuarios/{usuario_id}")
+def obter_usuario(usuario_id: int, admin=Depends(require_admin)):
+    usuario = buscar_usuario_por_id(usuario_id)
+    if not usuario:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuário não encontrado")
+    return usuario
 
